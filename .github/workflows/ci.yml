@@ -19,15 +19,18 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Run first launch setup
-        run: sudo xcodebuild -runFirstLaunch
-
-      - name: Find an available iPhone simulator
+      - name: Create and boot a fresh simulator
         id: simulator
         run: |
-          DEVICE_ID=$(xcrun simctl list devices available | grep -E "iPhone" | tail -1 | grep -oE '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}')
-          echo "Found device: $DEVICE_ID"
-          echo "device_id=$DEVICE_ID" >> "$GITHUB_OUTPUT"
+          sudo xcodebuild -runFirstLaunch
+          RUNTIME=$(xcrun simctl list runtimes available | grep -E "iOS" | tail -1 | grep -oE 'com\.apple\.CoreSimulator\.SimRuntime\.iOS-[0-9-]+')
+          echo "Using runtime: $RUNTIME"
+          DEVICE_TYPE=$(xcrun simctl list devicetypes | grep -m1 "iPhone" | grep -oE 'com\.apple\.CoreSimulator\.SimDeviceType\.[A-Za-z0-9-]+')
+          echo "Using device type: $DEVICE_TYPE"
+          UDID=$(xcrun simctl create "CI-iPhone" "$DEVICE_TYPE" "$RUNTIME")
+          echo "Created simulator: $UDID"
+          xcrun simctl boot "$UDID"
+          echo "device_id=$UDID" >> "$GITHUB_OUTPUT"
 
       - name: Build
         run: |
