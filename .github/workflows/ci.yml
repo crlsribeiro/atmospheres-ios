@@ -19,11 +19,16 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Show Xcode version
-        run: xcodebuild -version
-
-      - name: List valid destinations for scheme
+      - name: Build
         run: |
-          xcodebuild -project Atmospheres/Atmospheres.xcodeproj \
+          xcodebuild build \
+            -project Atmospheres/Atmospheres.xcodeproj \
             -scheme Atmospheres \
-            -showdestinations
+            -destination 'platform=iOS Simulator,name=iPhone 16'
+
+      - name: Test
+        run: |
+          xcodebuild test \
+            -project Atmospheres/Atmospheres.xcodeproj \
+            -scheme Atmospheres \
+            -destination 'platform=iOS Simulator,name=iPhone 16'
