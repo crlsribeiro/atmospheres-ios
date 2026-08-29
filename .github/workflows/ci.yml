@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Show available simulators
+        run: xcrun simctl list devices available
+
+      - name: Build
+        run: |
+          xcodebuild build \
+            -project Atmospheres/Atmospheres.xcodeproj \
+            -scheme Atmospheres \
+            -destination 'platform=iOS Simulator,name=iPhone 16'
+
+      - name: Test
+        run: |
+          xcodebuild test \
+            -project Atmospheres/Atmospheres.xcodeproj \
+            -scheme Atmospheres \
+            -destination 'platform=iOS Simulator,name=iPhone 16'
