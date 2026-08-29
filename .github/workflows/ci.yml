@@ -14,6 +14,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Select latest Xcode
+        run: |
+          LATEST_XCODE=$(ls -d /Applications/Xcode_*.app | sort -V | tail -n 1)
+          echo "Using $LATEST_XCODE"
+          sudo xcode-select -s "$LATEST_XCODE/Contents/Developer"
+          xcodebuild -version
+
       - name: Show available simulators
         run: xcrun simctl list devices available
 
@@ -22,11 +29,11 @@ jobs:
           xcodebuild build \
             -project Atmospheres/Atmospheres.xcodeproj \
             -scheme Atmospheres \
-            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5'
+            -destination 'platform=iOS Simulator,name=iPhone 16'
 
       - name: Test
         run: |
           xcodebuild test \
             -project Atmospheres/Atmospheres.xcodeproj \
             -scheme Atmospheres \
-            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5'
+            -destination 'platform=iOS Simulator,name=iPhone 16'
