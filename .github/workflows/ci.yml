@@ -22,11 +22,11 @@ jobs:
           xcodebuild build \
             -project Atmospheres/Atmospheres.xcodeproj \
             -scheme Atmospheres \
-            -destination 'platform=iOS Simulator,name=iPhone 16'
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5'
 
       - name: Test
         run: |
           xcodebuild test \
             -project Atmospheres/Atmospheres.xcodeproj \
             -scheme Atmospheres \
-            -destination 'platform=iOS Simulator,name=iPhone 16'
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5'
