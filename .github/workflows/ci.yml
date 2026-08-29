@@ -19,16 +19,23 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Find an available iPhone simulator
+        id: simulator
+        run: |
+          DEVICE_ID=$(xcrun simctl list devices available | grep -m 1 "iPhone 16 (" | grep -oE '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}')
+          echo "Found device: $DEVICE_ID"
+          echo "device_id=$DEVICE_ID" >> "$GITHUB_OUTPUT"
+
       - name: Build
         run: |
           xcodebuild build \
             -project Atmospheres/Atmospheres.xcodeproj \
             -scheme Atmospheres \
-            -destination 'platform=iOS Simulator,name=iPhone 16'
+            -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.device_id }}"
 
       - name: Test
         run: |
           xcodebuild test \
             -project Atmospheres/Atmospheres.xcodeproj \
             -scheme Atmospheres \
-            -destination 'platform=iOS Simulator,name=iPhone 16'
+            -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.device_id }}"
